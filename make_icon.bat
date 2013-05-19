@@ -1,13 +1,14 @@
 @ECHO OFF
-REM My DOS skills are horrid. Here comes the spaghetti...
 
 IF "%GOPATH%"=="" GOTO NOGO
-IF NOT EXIST %GOPATH%\bin\2carray.exe GOTO INSTALL
+IF NOT EXIST %GOPATH%\bin\2goarray.exe GOTO INSTALL
 :POSTINSTALL
 IF "%1"=="" GOTO NOICO
 IF NOT EXIST %1 GOTO BADFILE
-ECHO Creating platform\windows\icon.h
-TYPE %1 | %GOPATH%\bin\2carray ICON_ICO > platform\windows\icon.h
+ECHO Creating iconwin.go
+ECHO //+build windows > iconwin.go
+ECHO. >> iconwin.go
+TYPE %1 | %GOPATH%\bin\2goarray iconData main >> iconwin.go
 GOTO DONE
 
 :CREATEFAIL
@@ -15,13 +16,13 @@ ECHO Unable to create output file
 GOTO DONE
 
 :INSTALL
-ECHO Installing 2carray...
-go get github.com/cratonica/2carray
+ECHO Installing 2goarray...
+go get github.com/cratonica/2goarray
 IF ERRORLEVEL 1 GOTO GETFAIL
 GOTO POSTINSTALL
 
 :GETFAIL
-ECHO Failure running go get github.com/cratonica/2carray.  Ensure that go and git are in PATH
+ECHO Failure running go get github.com/cratonica/2goarray.  Ensure that go and git are in PATH
 GOTO DONE
 
 :NOGO

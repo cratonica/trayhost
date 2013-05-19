@@ -22,7 +22,7 @@ void set_url(const char* theUrl)
     url = theUrl;
 }
 
-void native_loop(const char *title, unsigned char *imageData, unsigned int imageDataLen);
+void native_loop(const char *title, unsigned char *imageData, unsigned int imageDataLen)
 {
     HWND hWnd;
     HINSTANCE hInstance = GetModuleHandle(NULL);
