@@ -61,10 +61,10 @@ Cross-compilation is not currently supported, so you will need access to a machi
 Generally speaking, make sure that your system is capable of doing [cgo](http://golang.org/doc/articles/c_go_cgo.html) builds.
 
 #### Linux
-In addition to the essential Linux build tools, you will need to have the GTK+ 3.0 development headers installed.
+In addition to the essential GNU build tools, you will need to have the GTK+ 3.0 development headers installed.
 
 #### Windows
-To do cgo builds, you will need to install [mingw](http://www.mingw.org/). In order to prevent the terminal window from appearing when your application runs, you'll need access to a copy of [editbin.exe](http://msdn.microsoft.com/en-us/library/xd3shwhf.aspx) which comes packaged with Microsoft's C/C++ build tools.
+To do cgo builds, you will need to install [MinGW](http://www.mingw.org/). In order to prevent the terminal window from appearing when your application runs, you'll need access to a copy of [editbin.exe](http://msdn.microsoft.com/en-us/library/xd3shwhf.aspx) which comes packaged with Microsoft's C/C++ build tools.
 
 #### Mac OSX
 __Note__: TrayHost requires __Go 1.1__ when targetting Mac OSX, or linking will fail due to issues with previous versions of Go and Mach-O binaries.
