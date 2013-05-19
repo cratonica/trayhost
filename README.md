@@ -83,6 +83,13 @@ from the base of your project directory. If all goes well, you should be able to
 
 and see a new icon appear in the system tray (or dock on OSX). 
 
+#### Disabling the Command Prompt Window on Windows
+The [editbin](http://msdn.microsoft.com/en-us/library/xd3shwhf.aspx) tool will allow you to change the subsystem of the output executable so that users won't see the command window while your application is running. The easiest way to do this is to open the Visual Studio Command Prompt from the start menu (or, alternatively, find __vcvarsall.bat__ in your Visual Studio installation directory and CALL it passing the __x86__ argument). Once you are in this environment, issue the command:
+
+    editbin.exe /SUBSYSTEM:WINDOWS path\to\program.exe
+
+Now when you run the program, you won't see a terminal window.
+
 Generating the Tray Icon
 ------------------------------------
 Included in the project is a tool for generating the icon that gets displayed in the system tray. An icon sized 64x64 pixels should suffice, but there aren't any restrictions here as the system will take care of fitting it (just don't get carried away). 
