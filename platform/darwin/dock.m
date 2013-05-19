@@ -56,7 +56,6 @@ void native_loop(const char *title) {
     [NSAutoreleasePool new];
     [NSApplication sharedApplication];
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-    //NSImage *icon = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:@"https://www.beyondthescores.com/Content/css/themes/apollo/bts/images/fullpage_logo.png"]];
 
     NSData *imageData = [[NSData alloc] initWithBytes:ICON_PNG length:sizeof(ICON_PNG)];
     NSImage *icon = [[NSImage alloc] initWithData:imageData];
