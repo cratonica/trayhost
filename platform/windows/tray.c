@@ -8,18 +8,17 @@
 
 #define MAX_LOADSTRING 100
 
-// Global Variables:
-HINSTANCE hInst;								// current instance
-TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
-TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
+HINSTANCE hInst;
+TCHAR szTitle[MAX_LOADSTRING];
+TCHAR szWindowClass[MAX_LOADSTRING];
 wchar_t *titleWide;
 const char *url;
 NOTIFYICONDATA nid;
 
-// Forward declarations of functions included in this code module:
-ATOM				MyRegisterClass(HINSTANCE hInstance);
-HWND				InitInstance(HINSTANCE, int);
-LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
+ATOM                MyRegisterClass(HINSTANCE hInstance);
+HWND                InitInstance(HINSTANCE, int);
+LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+
 void native_loop(const char *title);
 
 void set_url(const char* theUrl)
@@ -56,7 +55,7 @@ void native_loop(const char* title)
         // From http://msdn.microsoft.com/en-us/library/windows/desktop/aa363875.aspx
         TCHAR szTempFileName[MAX_PATH+1];
         TCHAR lpTempPathBuffer[MAX_PATH+1];
-        int dwRetVal = GetTempPath(MAX_PATH+1,    // length of the buffer
+        int dwRetVal = GetTempPath(MAX_PATH+1,        // length of the buffer
                                    lpTempPathBuffer); // buffer for path
         if (dwRetVal > MAX_PATH+1 || (dwRetVal == 0))
         {
@@ -112,17 +111,17 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style			= CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc	= WndProc;
-    wcex.cbClsExtra		= 0;
-    wcex.cbWndExtra		= 0;
-    wcex.hInstance		= hInstance;
-    wcex.hIcon			= LoadIcon(NULL, IDI_APPLICATION);
-    wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-    wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName	= 0;
-    wcex.lpszClassName	= szWindowClass;
-    wcex.hIconSm		= LoadIcon(NULL, IDI_APPLICATION);
+    wcex.style          = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc    = WndProc;
+    wcex.cbClsExtra     = 0;
+    wcex.cbWndExtra     = 0;
+    wcex.hInstance      = hInstance;
+    wcex.hIcon          = LoadIcon(NULL, IDI_APPLICATION);
+    wcex.hCursor        = LoadCursor(NULL, IDC_ARROW);
+    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+    wcex.lpszMenuName   = 0;
+    wcex.lpszClassName  = szWindowClass;
+    wcex.hIconSm        = LoadIcon(NULL, IDI_APPLICATION);
 
     return RegisterClassEx(&wcex);
 }
@@ -188,47 +187,47 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-    case WM_COMMAND:
-        switch (LOWORD(wParam))
-        {
-        case CMD_EXIT:
+        case WM_COMMAND:
+            switch (LOWORD(wParam))
+            {
+                case CMD_EXIT:
+                    Exit();
+                    break;
+                case CMD_OPEN_IN_BROWSER:
+                    OpenInBrowser();
+                    break;
+                case CMD_COPY_LINK:
+                {
+                    const size_t len = strlen(url) + 1;
+                    HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
+                    memcpy(GlobalLock(hMem), url, len);
+                    GlobalUnlock(hMem);
+                    OpenClipboard(0);
+                    EmptyClipboard();
+                    SetClipboardData(CF_TEXT, hMem);
+                    CloseClipboard();
+                }
+                break;
+            }
+            break;
+        case WM_DESTROY:
             Exit();
             break;
-        case CMD_OPEN_IN_BROWSER:
-            OpenInBrowser();
-            break;
-        case CMD_COPY_LINK:
-        {
-            const size_t len = strlen(url) + 1;
-            HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
-            memcpy(GlobalLock(hMem), url, len);
-            GlobalUnlock(hMem);
-            OpenClipboard(0);
-            EmptyClipboard();
-            SetClipboardData(CF_TEXT, hMem);
-            CloseClipboard();
-        }
-        break;
-        }
-        break;
-    case WM_DESTROY:
-        Exit();
-        break;
-    case WM_MYMESSAGE:
-        switch(lParam)
-        {
-        case WM_RBUTTONUP:
-            ShowMenu(hWnd);
-            break;
-        case WM_LBUTTONUP:
-            OpenInBrowser();
+        case WM_MYMESSAGE:
+            switch(lParam)
+            {
+                case WM_RBUTTONUP:
+                    ShowMenu(hWnd);
+                    break;
+                case WM_LBUTTONUP:
+                    OpenInBrowser();
+                    break;
+                default:
+                    return DefWindowProc(hWnd, message, wParam, lParam);
+            };
             break;
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
-        };
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
 }
