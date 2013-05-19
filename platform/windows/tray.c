@@ -29,16 +29,6 @@ void set_url(const char* theUrl)
 	url = theUrl;
 }
 
-int APIENTRY _tWinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPTSTR    lpCmdLine,
-                     int       nCmdShow)
-{
-	set_url("http://www.immutible.com");
-	native_loop("Immutible v1.0");
-	return 0;
-}
-
 void native_loop(const char* title)
 {
 	HWND hWnd;
