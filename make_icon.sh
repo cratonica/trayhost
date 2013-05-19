@@ -5,11 +5,11 @@ if [ -z "$GOPATH" ]; then
     exit
 fi
 
-if [ ! -e "$GOPATH/bin/2carray" ]; then
-    echo "Installing 2carray..."
-    go get github.com/cratonica/2carray
+if [ ! -e "$GOPATH/bin/2gorray" ]; then
+    echo "Installing 2goarray..."
+    go get github.com/cratonica/2goarray
     if [ $? -ne 0 ]; then
-        echo Failure executing go get github.com/cratonica/2carray
+        echo Failure executing go get github.com/cratonica/2goarray
         exit
     fi
 fi
@@ -24,9 +24,11 @@ if [ ! -f "$1" ]; then
     exit
 fi    
 
-OUTPUT=platform/shared/icon.h
+OUTPUT=iconpng.go
 echo Generating $OUTPUT
-cat $1 | 2carray ICON_PNG > $OUTPUT
+echo "//+build linux darwin" > $OUTPUT
+echo >> $OUTPUT
+cat $1 | $GOPATH/bin/2goarray iconPng main >> $OUTPUT
 if [ $? -ne 0 ]; then
     echo Failure generating $OUTPUT
     exit

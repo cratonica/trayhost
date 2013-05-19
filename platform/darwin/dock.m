@@ -1,5 +1,4 @@
 #import <Cocoa/Cocoa.h>
-#import "../shared/icon.h"
 
 static volatile NSString *strStaticUrl;
 static volatile NSURL *staticUrl;
@@ -52,12 +51,12 @@ NSMenu *m_menu;
 @end
 
 
-void native_loop(const char *title) {
+void native_loop(const char *title, unsigned char *imageDataBytes, unsigned int imageDataLen) {
     [NSAutoreleasePool new];
     [NSApplication sharedApplication];
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-    NSData *imageData = [[[NSData alloc] initWithBytes:ICON_PNG length:sizeof(ICON_PNG)] autorelease];
+    NSData *imageData = [[[NSData alloc] initWithBytes:imageDataBytes length:imageDataLen] autorelease];
     NSImage *icon = [[[NSImage alloc] initWithData:imageData] autorelease];
 
     [NSApp setApplicationIconImage:icon];

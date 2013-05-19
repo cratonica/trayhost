@@ -1,15 +1,16 @@
-/*
-   Example program for using trayhost
-*/
-package main
+package trayhost_test
 
 import (
 	"fmt"
+	"github.com/cratonica/trayhost"
 	"runtime"
 )
 
+// Refer to documentation at http://github.com/cratonica/trayhost for generating this
+var iconData []byte
+
 func main() {
-	// TrayLoop must be called on the OS's main thread
+	// Loop must be called on the OS's main thread
 	runtime.LockOSThread()
 
 	go func() {
@@ -18,11 +19,11 @@ func main() {
 		// by clicking the tray icon.
 
 		// Be sure to call this to link the tray icon to the target url
-		SetTrayUrl("http://github.com/cratonica/trayhost")
+		trayhost.SetUrl("http://github.com/cratonica/trayhost")
 	}()
 
 	// Enter the host system's event loop
-	TrayLoop("My Go App")
+	trayhost.EnterLoop("My Go App", iconData)
 
 	// This is only reached once the user chooses the Exit menu item
 	fmt.Println("Exiting")

@@ -28,9 +28,10 @@
 
    http://github.com/cratonica/trayhost
 */
-package main
+package trayhost
 
 import (
+	"reflect"
 	"unsafe"
 )
 
@@ -45,23 +46,43 @@ import (
 */
 import "C"
 
-// Run the host system's event loop
-func TrayLoop(title string) {
-	cs := C.CString(title)
-	C.native_loop(cs)
-
-	// If reached, user clicked Exit
-	C.free(unsafe.Pointer(cs))
-}
-
+var isExiting bool
 var urlPtr unsafe.Pointer
 
-// Set the URL that the tray icon will open in a browser
-func SetTrayUrl(url string) {
-	cs := C.CString(url)
-	if urlPtr != unsafe.Pointer(nil) {
-		C.free(urlPtr)
+// Run the host system's event loop
+func EnterLoop(title string, imageData []byte) {
+	defer C.free(urlPtr)
+
+	cTitle := C.CString(title)
+	defer C.free(unsafe.Pointer(cTitle))
+
+	// Copy the image data into unmanaged memory
+	cImageData := C.malloc(C.size_t(len(imageData)))
+	defer C.free(cImageData)
+	var cImageDataSlice []C.uchar
+	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(&cImageDataSlice))
+	sliceHeader.Cap = len(imageData)
+	sliceHeader.Len = len(imageData)
+	sliceHeader.Data = uintptr(cImageData)
+
+	for i, v := range imageData {
+		cImageDataSlice[i] = C.uchar(v)
 	}
+
+	// Enter the loop
+	C.native_loop(cTitle, &cImageDataSlice[0], C.uint(len(imageData)))
+
+	// If reached, user clicked Exit
+	isExiting = true
+}
+
+// Set the URL that the tray icon will open in a browser
+func SetUrl(url string) {
+	if isExiting {
+		return
+	}
+	cs := C.CString(url)
+	C.free(urlPtr)
 	urlPtr = unsafe.Pointer(cs)
 	C.set_url(cs)
 }

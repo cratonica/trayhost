@@ -6,7 +6,6 @@
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include "../shared/icon.h"
 
 static const char *menu_title = NULL;
 static const char *url = NULL;
@@ -63,10 +62,10 @@ static void tray_icon_on_menu(GtkStatusIcon *status_icon, guint button, guint ac
     gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
 }
 
-static GtkStatusIcon *create_tray_icon() {
+static GtkStatusIcon *create_tray_icon(unsigned char *imageData, unsigned int imageDataLen) {
     GtkStatusIcon *tray_icon;
     GError *error = NULL;
-    GInputStream *stream = g_memory_input_stream_new_from_data(ICON_PNG, sizeof(ICON_PNG), NULL);
+    GInputStream *stream = g_memory_input_stream_new_from_data(imageData, imageDataLen, NULL);
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_stream(stream, NULL, &error);
     if (error)
         fprintf(stderr, "Unable to create PixBuf: %s\n", error->message);
@@ -89,14 +88,14 @@ void set_url(const char* theUrl)
         gtk_widget_set_sensitive(copyMenuItem, TRUE);
 }
 
-void native_loop(const char* title) 
+void native_loop(const char* title, unsigned char *imageData, unsigned int imageDataLen) 
 {
     int argc = 0;
     char *argv[] = { "" };
     menu_title = title;
 
     gtk_init(&argc, (char***)&argv);
-    create_tray_icon(title);
+    create_tray_icon(imageData, imageDataLen);
     gtk_main();
 }
 

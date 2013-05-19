@@ -2,8 +2,6 @@
 #include <windows.h>
 #include <shellapi.h>
 
-#include "icon.h"
-
 #define WM_MYMESSAGE (WM_USER + 1)
 
 #define MAX_LOADSTRING 100
@@ -19,14 +17,12 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 HWND                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
-void native_loop(const char *title);
-
 void set_url(const char* theUrl)
 {
     url = theUrl;
 }
 
-void native_loop(const char* title)
+void native_loop(const char *title, unsigned char *imageData, unsigned int imageDataLen);
 {
     HWND hWnd;
     HINSTANCE hInstance = GetModuleHandle(NULL);
@@ -74,7 +70,7 @@ void native_loop(const char* title)
 
         // Dump the icon to the temp file
         FILE* fIcon = fopen(szTempFileName, "wb");
-        fwrite(ICON_ICO, 1, sizeof(ICON_ICO), fIcon);
+        fwrite(imageData, 1, imageDataLen, fIcon);
         fclose(fIcon);
         fIcon = NULL;
 
