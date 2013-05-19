@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <windows.h>
 #include <shellapi.h>
@@ -26,64 +24,64 @@ void native_loop(const char *title);
 
 void set_url(const char* theUrl)
 {
-	url = theUrl;
+    url = theUrl;
 }
 
 void native_loop(const char* title)
 {
-	HWND hWnd;
-	HINSTANCE hInstance = GetModuleHandle(NULL);
+    HWND hWnd;
+    HINSTANCE hInstance = GetModuleHandle(NULL);
 
-	MSG msg;
-    
-	titleWide = (wchar_t*)calloc(strlen(title) + 1, sizeof(wchar_t));
-	mbstowcs(titleWide, title, strlen(title));
+    MSG msg;
 
-	wcscpy((wchar_t*)szTitle, titleWide);
-	wcscpy((wchar_t*)szWindowClass, (wchar_t*)TEXT("MyClass"));
-	MyRegisterClass(hInstance);
+    titleWide = (wchar_t*)calloc(strlen(title) + 1, sizeof(wchar_t));
+    mbstowcs(titleWide, title, strlen(title));
 
-	hWnd = InitInstance(hInstance, FALSE); // Don't show window
-	if (!hWnd)
-	{
-		return;
-	}
-    
+    wcscpy((wchar_t*)szTitle, titleWide);
+    wcscpy((wchar_t*)szWindowClass, (wchar_t*)TEXT("MyClass"));
+    MyRegisterClass(hInstance);
+
+    hWnd = InitInstance(hInstance, FALSE); // Don't show window
+    if (!hWnd)
+    {
+        return;
+    }
+
     // Let's load up the tray icon
     HICON hIcon;
     {
         // This is really hacky, but LoadImage won't let me load an image from memory.
         // So we have to write out a temporary file, load it from there, then delete the file.
-        
+
         // From http://msdn.microsoft.com/en-us/library/windows/desktop/aa363875.aspx
-        TCHAR szTempFileName[MAX_PATH+1];  
+        TCHAR szTempFileName[MAX_PATH+1];
         TCHAR lpTempPathBuffer[MAX_PATH+1];
         int dwRetVal = GetTempPath(MAX_PATH+1,    // length of the buffer
-                               lpTempPathBuffer); // buffer for path 
+                                   lpTempPathBuffer); // buffer for path
         if (dwRetVal > MAX_PATH+1 || (dwRetVal == 0))
         {
             return; // Failure
         }
 
-        //  Generates a temporary file name. 
+        //  Generates a temporary file name.
         int uRetVal = GetTempFileName(lpTempPathBuffer, // directory for tmp files
-                                  TEXT("_tmpicon"), // temp file name prefix 
-                                  0,                // create unique name 
-                                  szTempFileName);  // buffer for name 
+                                      TEXT("_tmpicon"), // temp file name prefix
+                                      0,                // create unique name
+                                      szTempFileName);  // buffer for name
         if (uRetVal == 0)
         {
             return; // Failure
         }
-        
+
         // Dump the icon to the temp file
         FILE* fIcon = fopen(szTempFileName, "wb");
         fwrite(ICON_ICO, 1, sizeof(ICON_ICO), fIcon);
         fclose(fIcon);
         fIcon = NULL;
-        
+
         // Load the image from the file
         hIcon = LoadImage(NULL, szTempFileName, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
-        
+
         // Delete the temp file
         remove(szTempFileName);
     }
@@ -96,57 +94,57 @@ void native_loop(const char* title)
 
     strcpy(nid.szTip, title); // MinGW seems to use ANSI
     nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
-	
+
     Shell_NotifyIcon(NIM_ADD, &nid);
 
-	// Main message loop:
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
+    // Main message loop:
+    while (GetMessage(&msg, NULL, 0, 0))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
 }
 
 
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-	WNDCLASSEX wcex;
+    WNDCLASSEX wcex;
 
-	wcex.cbSize = sizeof(WNDCLASSEX);
+    wcex.cbSize = sizeof(WNDCLASSEX);
 
-	wcex.style			= CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc	= WndProc;
-	wcex.cbClsExtra		= 0;
-	wcex.cbWndExtra		= 0;
-	wcex.hInstance		= hInstance;
-	wcex.hIcon			= LoadIcon(NULL, IDI_APPLICATION);
-	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName	= 0;
-	wcex.lpszClassName	= szWindowClass;
-	wcex.hIconSm		= LoadIcon(NULL, IDI_APPLICATION);
+    wcex.style			= CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc	= WndProc;
+    wcex.cbClsExtra		= 0;
+    wcex.cbWndExtra		= 0;
+    wcex.hInstance		= hInstance;
+    wcex.hIcon			= LoadIcon(NULL, IDI_APPLICATION);
+    wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+    wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
+    wcex.lpszMenuName	= 0;
+    wcex.lpszClassName	= szWindowClass;
+    wcex.hIconSm		= LoadIcon(NULL, IDI_APPLICATION);
 
-	return RegisterClassEx(&wcex);
+    return RegisterClassEx(&wcex);
 }
 
 HWND InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   HWND hWnd;
+    HWND hWnd;
 
-   hInst = hInstance;
+    hInst = hInstance;
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+                        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
-   if (!hWnd)
-   {
-      return 0;
-   }
+    if (!hWnd)
+    {
+        return 0;
+    }
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+    ShowWindow(hWnd, nCmdShow);
+    UpdateWindow(hWnd);
 
-   return hWnd;
+    return hWnd;
 }
 
 #define CMD_OPEN_IN_BROWSER 1001
@@ -156,81 +154,81 @@ HWND InitInstance(HINSTANCE hInstance, int nCmdShow)
 void ShowMenu(HWND hWnd)
 {
     HMENU hSubMenu = CreatePopupMenu();
-	POINT p;
-	GetCursorPos(&p);
+    POINT p;
+    GetCursorPos(&p);
 
     hSubMenu = CreatePopupMenu();
-	AppendMenuW(hSubMenu, MF_STRING | MF_GRAYED, CMD_OPEN_IN_BROWSER, titleWide);
-	if (url)
-	{
-		AppendMenuW(hSubMenu, MF_SEPARATOR, 0, NULL);
-		AppendMenuW(hSubMenu, MF_STRING, CMD_OPEN_IN_BROWSER, L"Open in Browser");
-		AppendMenuW(hSubMenu, MF_STRING, CMD_COPY_LINK, L"Copy Link to Clipboard");
-	}
+    AppendMenuW(hSubMenu, MF_STRING | MF_GRAYED, CMD_OPEN_IN_BROWSER, titleWide);
+    if (url)
+    {
+        AppendMenuW(hSubMenu, MF_SEPARATOR, 0, NULL);
+        AppendMenuW(hSubMenu, MF_STRING, CMD_OPEN_IN_BROWSER, L"Open in Browser");
+        AppendMenuW(hSubMenu, MF_STRING, CMD_COPY_LINK, L"Copy Link to Clipboard");
+    }
     AppendMenuW(hSubMenu, MF_SEPARATOR, 0, NULL);
     AppendMenuW(hSubMenu, MF_STRING, CMD_EXIT, L"Exit");
 
-	SetForegroundWindow(hWnd); // Win32 bug work-around
-	TrackPopupMenu(hSubMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, p.x, p.y, 0, hWnd, NULL);
+    SetForegroundWindow(hWnd); // Win32 bug work-around
+    TrackPopupMenu(hSubMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, p.x, p.y, 0, hWnd, NULL);
 
 }
 
 void Exit()
 {
-	Shell_NotifyIcon(NIM_DELETE, &nid);
-	PostQuitMessage(0);
+    Shell_NotifyIcon(NIM_DELETE, &nid);
+    PostQuitMessage(0);
 }
 
 void OpenInBrowser()
 {
-	ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWDEFAULT);
+    ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWDEFAULT);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	switch (message)
-	{
-		case WM_COMMAND:
-			switch (LOWORD(wParam))
-			{
-				case CMD_EXIT:
-					Exit();
-					break;
-				case CMD_OPEN_IN_BROWSER:
-					OpenInBrowser();
-					break;
-				case CMD_COPY_LINK:
-                {
-					const size_t len = strlen(url) + 1;
-					HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
-					memcpy(GlobalLock(hMem), url, len);
-					GlobalUnlock(hMem);
-					OpenClipboard(0);
-					EmptyClipboard();
-					SetClipboardData(CF_TEXT, hMem);
-					CloseClipboard();
-                }
-				break;
-			}
-			break;
-		case WM_DESTROY:
-			Exit();
-			break;
-		case WM_MYMESSAGE:
-			 switch(lParam)
-			 {
-			 case WM_RBUTTONUP:
-		         ShowMenu(hWnd);
-				 break;
-			 case WM_LBUTTONUP:
-				 OpenInBrowser();
-				 break;
-			 default:
-					return DefWindowProc(hWnd, message, wParam, lParam);
-			 };
-			 break;
-		default:
-			return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-	return 0;
+    switch (message)
+    {
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case CMD_EXIT:
+            Exit();
+            break;
+        case CMD_OPEN_IN_BROWSER:
+            OpenInBrowser();
+            break;
+        case CMD_COPY_LINK:
+        {
+            const size_t len = strlen(url) + 1;
+            HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
+            memcpy(GlobalLock(hMem), url, len);
+            GlobalUnlock(hMem);
+            OpenClipboard(0);
+            EmptyClipboard();
+            SetClipboardData(CF_TEXT, hMem);
+            CloseClipboard();
+        }
+        break;
+        }
+        break;
+    case WM_DESTROY:
+        Exit();
+        break;
+    case WM_MYMESSAGE:
+        switch(lParam)
+        {
+        case WM_RBUTTONUP:
+            ShowMenu(hWnd);
+            break;
+        case WM_LBUTTONUP:
+            OpenInBrowser();
+            break;
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
+        };
+        break;
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
 }
