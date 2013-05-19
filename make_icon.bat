@@ -14,9 +14,6 @@ GOTO DONE
 ECHO Unable to create output file
 GOTO DONE
 
-ECHO %1
-GOTO DONE
-
 :INSTALL
 ECHO Installing 2carray...
 go get github.com/cratonica/2carray
