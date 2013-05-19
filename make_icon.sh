@@ -5,7 +5,7 @@ if [ -z "$GOPATH" ]; then
     exit
 fi
 
-if [ ! -e "$GOPATH/bin/2gorray" ]; then
+if [ ! -e "$GOPATH/bin/2goarray" ]; then
     echo "Installing 2goarray..."
     go get github.com/cratonica/2goarray
     if [ $? -ne 0 ]; then
