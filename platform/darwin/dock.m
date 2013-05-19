@@ -57,12 +57,13 @@ void native_loop(const char *title) {
     [NSApplication sharedApplication];
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-    NSData *imageData = [[NSData alloc] initWithBytes:ICON_PNG length:sizeof(ICON_PNG)];
-    NSImage *icon = [[NSImage alloc] initWithData:imageData];
+    NSData *imageData = [[[NSData alloc] initWithBytes:ICON_PNG length:sizeof(ICON_PNG)] autorelease];
+    NSImage *icon = [[[NSImage alloc] initWithData:imageData] autorelease];
 
     [NSApp setApplicationIconImage:icon];
 
-    [NSApp setDelegate:[[AppDelegate alloc] init:[NSString stringWithCString:title encoding:NSASCIIStringEncoding]]];
+    AppDelegate *delegate = [[[AppDelegate alloc] init:[NSString stringWithCString:title encoding:NSASCIIStringEncoding]] autorelease];
+    [NSApp setDelegate:delegate];
 
     [NSApp activateIgnoringOtherApps:YES];
     [NSApp run];
