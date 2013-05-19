@@ -1,0 +1,83 @@
+#import <Cocoa/Cocoa.h>
+#import "../shared/icon.h"
+
+static volatile NSString *strStaticUrl;
+static volatile NSURL *staticUrl;
+
+@interface AppDelegate: NSObject <NSApplicationDelegate>
+- (NSMenu *)applicationDockMenu:(NSApplication *)sender;
+@end
+
+@implementation AppDelegate
+NSString *m_title;
+NSMenu *m_menu;
+- (id)init:(NSString *)title {
+    if ((self = [super init])) {
+        m_title = title;
+    }
+    return self;
+}
+
+- (NSMenu *)applicationDockMenu:(NSApplication *)sender {
+    if (m_menu == nil) {
+        m_menu = [[[NSMenu alloc] init] retain];
+
+        id titleMenuItem = [[[NSMenuItem alloc] initWithTitle:m_title action:@selector(terminate:) keyEquivalent:@"q"] autorelease];
+
+        [m_menu addItem:titleMenuItem];
+        [m_menu addItem:[NSMenuItem separatorItem]];
+        NSMenuItem *openMenuItem = [[[NSMenuItem alloc] initWithTitle:@"Open in Browser" action:@selector(openUrl) keyEquivalent:@""] autorelease];
+        [m_menu addItem:openMenuItem];
+        NSMenuItem *copyUrlMenuItem = [[[NSMenuItem alloc] initWithTitle:@"Copy link to Clipboard" action:@selector(copyUrl) keyEquivalent:@""] autorelease];
+        [m_menu addItem:copyUrlMenuItem];
+
+        // OSX will automatically add the Quit option
+
+    }
+    return m_menu;
+}
+- (void)copyUrl {
+    if (strStaticUrl) {
+        NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+        [pasteboard clearContents];
+        NSArray *copiedObjects = [NSArray arrayWithObject:strStaticUrl];
+        [pasteboard writeObjects:copiedObjects];
+    }
+}
+- (void)openUrl {
+    if (staticUrl) {
+        [[NSWorkspace sharedWorkspace] openURL:(NSURL*)staticUrl];
+    }
+}
+@end
+
+
+void native_loop(const char *title) {
+    [NSAutoreleasePool new];
+    [NSApplication sharedApplication];
+    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+    //NSImage *icon = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:@"https://www.beyondthescores.com/Content/css/themes/apollo/bts/images/fullpage_logo.png"]];
+
+    NSData *imageData = [[NSData alloc] initWithBytes:ICON_PNG length:sizeof(ICON_PNG)];
+    NSImage *icon = [[NSImage alloc] initWithData:imageData];
+
+    [NSApp setApplicationIconImage:icon];
+
+    [NSApp setDelegate:[[AppDelegate alloc] init:[NSString stringWithCString:title encoding:NSASCIIStringEncoding]]];
+
+    [NSApp activateIgnoringOtherApps:YES];
+    [NSApp run];
+
+    // I don't think this is ever reached, but for completeness...
+    [staticUrl release];
+    [strStaticUrl release];
+}
+
+void set_url(const char *url) {
+    // Hoping these assignments are atomic...
+    // Using alloc to prevent the framework from trying to autorelease these.
+
+    strStaticUrl = [[NSString alloc] initWithBytes:url length:strlen(url) encoding:NSASCIIStringEncoding];
+    staticUrl = [[NSURL alloc] initWithString:(NSString*)strStaticUrl];
+}
+
