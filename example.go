@@ -22,7 +22,7 @@ func main() {
 	}()
 
 	// Enter the host system's event loop
-	TrayLoop("My Go App2")
+	TrayLoop("My Go App")
 
 	// This is only reached once the user chooses the Exit menu item
 	fmt.Println("Exiting")
