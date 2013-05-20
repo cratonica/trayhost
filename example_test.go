@@ -10,7 +10,7 @@ import (
 var iconData []byte
 
 func main() {
-	// Loop must be called on the OS's main thread
+	// EnterLoop must be called on the OS's main thread
 	runtime.LockOSThread()
 
 	go func() {

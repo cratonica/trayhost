@@ -1,32 +1,30 @@
 /*
-   Trayhost provides boilerplate for placing a Go application
-   in the task bar (system tray, notification area, or dock)
-   in a consistent manner across multiple platforms. Currently,
-   there is built-in support for Windows, Mac OSX, and Linux
-   systems that support GTK+ 3 status icons (including
-   Gnome 2, KDE 4, Cinnamon, MATE and other desktop
-   environments).
+Package trayhost is a library for placing a Go
+application in the task bar (system tray,
+notification area, or dock) in a consistent
+manner across multiple platforms. Currently,
+there is built-in support for Windows, Mac OSX,
+and Linux systems that support GTK+ 3 status
+icons (including Gnome 2, KDE 4, Cinnamon,
+MATE and other desktop environments).
 
-   The indended usage is for redistributable web applications
-   that require access to the client's system in ways that
-   make remotely hosted web apps not possible, but still
-   wish to use the web browser as the primary user interface.
+The indended usage is for applications that
+utilize web technology for the user interface, but
+require access to the client system beyond what
+is offered in a browser sandbox (for instance,
+an application that requires access to the user's
+file system).
 
-   This allows for developing cross-platform applications with
-   deep access to the system.
+The library places a tray icon on the host system's
+task bar that can be used to open a URL, giving users
+easy access to the web-based user interface.
 
-   A tray icon will be placed with menu options to open a
-   URL, giving users easy access to the web-based user
-   interface. On OSX, the icon will reside in the dock
-   per Apple's design guidelines rather than in the
-   so-called "Menu Extras" location.
+Further information can be found at the project's
+home at http://github.com/cratonica/trayhost
 
-   Further information can be found at the project's
-   home at http://github.com/cratonica/trayhost
+Clint Caywood
 
-   Clint Caywood
-
-   http://github.com/cratonica/trayhost
+http://github.com/cratonica/trayhost
 */
 package trayhost
 

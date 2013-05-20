@@ -1,56 +1,41 @@
 TrayHost
 ========
 
-   __TrayHost__ provides boilerplate for placing a Go application
-   in the task bar (system tray, notification area, or dock)
-   in a consistent manner across multiple platforms. Currently,
-   there is built-in support for Windows, Mac OSX, and Linux
-   systems that support GTK+ 3 status icons (including
-   Gnome 2, KDE 4, Cinnamon, MATE and other desktop
-   environments).
+__TrayHost__ is a library for placing a __Go__ application in the task bar (system tray, notification area, or dock) in a consistent manner across multiple platforms. Currently, there is built-in support for __Windows__, __Mac OSX__, and __Linux__ systems that support GTK+ 3 status icons (including Gnome 2, KDE 4, Cinnamon, MATE and other desktop environments).
 
-   The indended usage is for redistributable web applications
-   that require access to the client's system in ways that
-   make remotely hosted web apps not possible, but still
-   wish to use the web browser as the primary user interface.
+The indended usage is for applications that utilize web technology for the user interface, but require access to the client system beyond what is offered in a browser sandbox (for instance, an application that requires access to the user's file system).
 
-   This allows for developing cross-platform applications with
-   deep access to the system.
+The library places a tray icon on the host system's task bar that can be used to open a URL, giving users easy access to the web-based user interface. 
 
-   A tray icon will be placed with menu options to open a
-   URL, giving users easy access to the web-based user
-   interface. On OSX, the icon will reside in the dock
-   per Apple's design guidelines rather than in the
-   so-called "Menu Extras" location.
+API docs can be found [here](http://godoc.org/github.com/cratonica/trayhost)
 
 The Interesting Part
 ----------------------
-
-Because TrayHost is boilerplate (instead of being a library you link in), you will need to fork or copy the code base for use in your project. This primarily due to the way that the code links against the native libraries, and the fact that the platform-specific code is compiled with generated code. I agree with you that this is unfortunate.
-
-Once you've forked the code base, you will find what you need to get started in the __example.go__ file:
+    import (
+        "fmt"
+        "github.com/cratonica/trayhost"
+        "runtime"
+    )
 
     func main() {
-	    // TrayLoop must be called on the OS's main thread
-	    runtime.LockOSThread()
+        // EnterLoop must be called on the OS's main thread
+        runtime.LockOSThread()
 
-	    go func() {
-		    // Run your application/server code in here. Most likely you will
-		    // want to start an HTTP server that the user can hit with a browser
-		    // by clicking the tray icon.
+        go func() {
+            // Run your application/server code in here. Most likely you will
+            // want to start an HTTP server that the user can hit with a browser
+            // by clicking the tray icon.
 
-		    // Be sure to call this to link the tray icon to the target url
-		    SetTrayUrl("http://github.com/cratonica/trayhost")
-	    }()
+            // Be sure to call this to link the tray icon to the target url
+            trayhost.SetUrl("http://localhost:8080")
+        }()
 
-	    // Enter the host system's event loop
-	    TrayLoop("My Go App")
+        // Enter the host system's event loop
+        trayhost.EnterLoop("My Go App", iconData)
 
-	    // This is only reached once the user chooses the Exit menu item
-	    fmt.Println("Exiting")
+        // This is only reached once the user chooses the Exit menu item
+        fmt.Println("Exiting")
     }
-
-OSX will throw a runtime error if __TrayLoop__ is called on a child thread, so the first thing you must do is lock the OS thread. Your application code will need to run on a child goroutine. __SetTrayUrl__ can be called lazily if you need to take some time to determine what port you are running on. 
 
 Build Environment
 --------------------------
@@ -71,39 +56,44 @@ __Note__: TrayHost requires __Go 1.1__ when targetting Mac OSX, or linking will 
 
 You'll need the "Command Line Tools for Xcode", which can be installed using Xcode. You should be able to run the __cc__ command from a terminal window.
 
-Building
+Installing
 -----------
-Once your build environment is configured, try to build the example app by running
+Once your build environment is configured, go get the library:
 
-    go install
+    go get github.com/cratonica/trayhost
 
-from the base of your project directory. If all goes well, you should be able to run
+If all goes well, you shouldn't get any errors.
 
-    $GOPATH/trayhost
+Using
+-----
+Use the included __example_test.go__ file as a template to get going.  OSX will throw a runtime error if __EnterLoop__ is called on a child thread, so the first thing you must do is lock the OS thread. Your application code will need to run on a child goroutine. __SetUrl__ can be called lazily if you need to take some time to determine what port you are running on. 
 
-and see a new icon appear in the system tray (or dock on OSX). 
+Before it will build, you will need to pick an icon for display in the system tray.
 
+#### Generating the Tray Icon
+Included in the project is a tool for generating the icon that gets displayed in the system tray. An icon sized 64x64 pixels should suffice, but there aren't any restrictions here as the system will take care of fitting it (just don't get carried away). 
+
+Icons are embedded into the application by generating a Go array containing the byte data using the [2goarray](http://github.com/cratonica/2goarray) tool, which will automatically be installed if it is missing. The generated .go file will be compiled into the output program, so there is no need to distribute the icon with the program. If you want to embed more resources, check out the [embed](http://github.com/cratonica/embed) project.
+
+#### Linux/OSX
+From your project root, run __make_icon.sh__, followed by the path to a __PNG__ file to use. For example:
+
+    $GOPATH/src/github.com/cratonica/trayhost/make_icon.sh ~/Documents/MyIcon.png
+
+This will generate a file called __iconunix.go__ and set its build options so it won't be built in Windows.
+
+#### Windows
+From the project root, run __make_icon.bat__, followed by the path to a __Windows ICO__ file to use. If you need to create an ICO file, the online tool [ConvertICO](http://convertico.com/) can do this painlessly. 
+
+Example:
+
+    %GOPATH%\src\github.com\cratonica\trayhost\make_icon.bat C:\MyIcon.ico
+
+This will generate a file called __iconwin.go__ and set its build options so it will only be built in Windows.
+    
 #### Disabling the Command Prompt Window on Windows
 The [editbin](http://msdn.microsoft.com/en-us/library/xd3shwhf.aspx) tool will allow you to change the subsystem of the output executable so that users won't see the command window while your application is running. The easiest way to do this is to open the Visual Studio Command Prompt from the start menu (or, alternatively, find __vcvarsall.bat__ in your Visual Studio installation directory and CALL it passing the __x86__ argument). Once you are in this environment, issue the command:
 
     editbin.exe /SUBSYSTEM:WINDOWS path\to\program.exe
 
 Now when you run the program, you won't see a terminal window.
-
-Generating the Tray Icon
-------------------------------------
-Included in the project is a tool for generating the icon that gets displayed in the system tray. An icon sized 64x64 pixels should suffice, but there aren't any restrictions here as the system will take care of fitting it (just don't get carried away). 
-
-Icons are embedded into the application by generating a C array containing the byte data using the [2carray](http://github.com/cratonica/2carray) tool, which will automatically be installed if it is missing. The generated .h file will be compiled into the output program.
-
-#### Linux/OSX
-From the project root, run __make_icon.sh__, followed by the path to a PNG file to use. For example:
-
-    ./make_icon.sh ~/Documents/MyIcon.png
-
-#### Windows
-From the project root, run __make_icon.bat__, followed by the path to a Windows ICO file to use. If you need to create an ICO file, the online tool [ConvertICO](http://convertico.com/) can do this painlessly. 
-
-Example:
-
-    ./make_icon.sh ~/Documents/MyIcon.ico

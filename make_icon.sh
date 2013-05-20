@@ -24,11 +24,11 @@ if [ ! -f "$1" ]; then
     exit
 fi    
 
-OUTPUT=iconpng.go
+OUTPUT=iconunix.go
 echo Generating $OUTPUT
 echo "//+build linux darwin" > $OUTPUT
 echo >> $OUTPUT
-cat $1 | $GOPATH/bin/2goarray iconPng main >> $OUTPUT
+cat $1 | $GOPATH/bin/2goarray iconData main >> $OUTPUT
 if [ $? -ne 0 ]; then
     echo Failure generating $OUTPUT
     exit
