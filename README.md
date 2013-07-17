@@ -3,7 +3,7 @@ TrayHost
 
 __TrayHost__ is a library for placing a __Go__ application in the task bar (system tray, notification area, or dock) in a consistent manner across multiple platforms. Currently, there is built-in support for __Windows__, __Mac OSX__, and __Linux__ systems that support GTK+ 3 status icons (including Gnome 2, KDE 4, Cinnamon, MATE and other desktop environments).
 
-The indended usage is for applications that utilize web technology for the user interface, but require access to the client system beyond what is offered in a browser sandbox (for instance, an application that requires access to the user's file system).
+The intended usage is for applications that utilize web technology for the user interface, but require access to the client system beyond what is offered in a browser sandbox (for instance, an application that requires access to the user's file system).
 
 The library places a tray icon on the host system's task bar that can be used to open a URL, giving users easy access to the web-based user interface. 
 
