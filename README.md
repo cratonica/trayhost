@@ -11,31 +11,33 @@ API docs can be found [here](http://godoc.org/github.com/cratonica/trayhost)
 
 The Interesting Part
 ----------------------
-    import (
-        "fmt"
-        "github.com/cratonica/trayhost"
-        "runtime"
-    )
+```go
+import (
+    "fmt"
+    "github.com/cratonica/trayhost"
+    "runtime"
+)
 
-    func main() {
-        // EnterLoop must be called on the OS's main thread
-        runtime.LockOSThread()
+func main() {
+    // EnterLoop must be called on the OS's main thread
+    runtime.LockOSThread()
 
-        go func() {
-            // Run your application/server code in here. Most likely you will
-            // want to start an HTTP server that the user can hit with a browser
-            // by clicking the tray icon.
+    go func() {
+        // Run your application/server code in here. Most likely you will
+        // want to start an HTTP server that the user can hit with a browser
+        // by clicking the tray icon.
 
-            // Be sure to call this to link the tray icon to the target url
-            trayhost.SetUrl("http://localhost:8080")
-        }()
+        // Be sure to call this to link the tray icon to the target url
+        trayhost.SetUrl("http://localhost:8080")
+    }()
 
-        // Enter the host system's event loop
-        trayhost.EnterLoop("My Go App", iconData)
+    // Enter the host system's event loop
+    trayhost.EnterLoop("My Go App", iconData)
 
-        // This is only reached once the user chooses the Exit menu item
-        fmt.Println("Exiting")
-    }
+    // This is only reached once the user chooses the Exit menu item
+    fmt.Println("Exiting")
+}
+```
 
 Build Environment
 --------------------------
