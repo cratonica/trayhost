@@ -51,7 +51,9 @@ Generally speaking, make sure that your system is capable of doing [cgo](http://
 In addition to the essential GNU build tools, you will need to have the GTK+ 3.0 development headers installed.
 
 #### Windows
-To do cgo builds, you will need to install [MinGW](http://www.mingw.org/). In order to prevent the terminal window from appearing when your application runs, you'll need access to a copy of [editbin.exe](http://msdn.microsoft.com/en-us/library/xd3shwhf.aspx) which comes packaged with Microsoft's C/C++ build tools.
+To do cgo builds, you will need to install [MinGW](http://www.mingw.org/). In order to prevent the terminal window from appearing when your application runs, build with:
+
+    go build -ldflags -H=windowsgui
 
 #### Mac OSX
 __Note__: TrayHost requires __Go 1.1__ when targetting Mac OSX, or linking will fail due to issues with previous versions of Go and Mach-O binaries.
@@ -92,10 +94,3 @@ Example:
     %GOPATH%\src\github.com\cratonica\trayhost\make_icon.bat C:\MyIcon.ico
 
 This will generate a file called __iconwin.go__ and set its build options so it will only be built in Windows.
-    
-#### Disabling the Command Prompt Window on Windows
-The [editbin](http://msdn.microsoft.com/en-us/library/xd3shwhf.aspx) tool will allow you to change the subsystem of the output executable so that users won't see the command window while your application is running. The easiest way to do this is to open the Visual Studio Command Prompt from the start menu (or, alternatively, find __vcvarsall.bat__ in your Visual Studio installation directory and CALL it passing the __x86__ argument). Once you are in this environment, issue the command:
-
-    editbin.exe /SUBSYSTEM:WINDOWS path\to\program.exe
-
-Now when you run the program, you won't see a terminal window.
